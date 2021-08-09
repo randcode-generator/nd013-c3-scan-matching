@@ -27,13 +27,14 @@ using namespace std;
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/filters/voxel_grid.h>
-#include "helper.h"
 #include <sstream>
 #include <chrono> 
 #include <ctime> 
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/console/time.h>   // TicToc
+
+#include "icp.h"
 
 PointCloudT pclCloud;
 cc::Vehicle::Control control;
@@ -98,6 +99,8 @@ void drawCar(Pose pose, int num, Color color, double alpha, pcl::visualization::
     box.cube_height = 2;
 	renderBox(viewer, box, num, color, alpha);
 }
+
+vector<int> associations;
 
 int main(){
 
@@ -210,6 +213,10 @@ int main(){
 
 			// TODO: Find pose transform by using ICP or NDT matching
 			//pose = ....
+			associations = NN(target, source, transformInit, 5);
+          	
+          	// Eigen::Matrix4d transform = ICP(associations, target, source, pose, 1, viewer);
+          	// pose = getPose(transform);
 
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
 

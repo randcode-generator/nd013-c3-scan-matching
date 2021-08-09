@@ -2,6 +2,34 @@
 
 vector<Pair> estimations;
 
+vector<int> NN(PointCloudT::Ptr target, PointCloudT::Ptr source, Eigen::Matrix4d initTransform, double dist){
+
+    PointCloudT::Ptr transformSource (new PointCloudT); 
+      pcl::transformPointCloud (*source, *transformSource, initTransform);
+
+    pcl::KdTreeFLANN<PointT> kdtree;
+    kdtree.setInputCloud (target);
+
+    vector<int> associations;
+
+    int index = 0;
+    for(PointT point : transformSource->points ){
+
+        vector<int> pointIdxRadiusSearch;
+          vector<float> pointRadiusSquaredDistance;
+        if ( kdtree.radiusSearch (point, dist, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0 )
+         {
+            associations.push_back(pointIdxRadiusSearch[0]);
+        }
+        else{
+            associations.push_back(-1);
+        }
+        index++;
+    }
+
+    return associations;
+}
+
 vector<Pair> PairPoints(vector<int> associations, PointCloudT::Ptr target, PointCloudT::Ptr source, bool render, pcl::visualization::PCLVisualizer::Ptr& viewer){
 
 	vector<Pair> pairs;

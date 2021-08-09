@@ -1,11 +1,3 @@
-// #ifndef ICP
-// #define ICP
-
-// #include <pcl/io/pcd_io.h>
-// #include <vector>
-// #include <Eigen/Geometry>
-// #include <Eigen/Core>
-// #include <Eigen/SVD>
 #include <pcl/registration/icp.h>
 #include <Eigen/Core>
 #include <Eigen/SVD>
@@ -28,5 +20,4 @@ struct Pair{
 };
 
 Eigen::Matrix4d ICP(vector<int> associations, PointCloudT::Ptr target, PointCloudT::Ptr source, Pose startingPose, int iterations, pcl::visualization::PCLVisualizer::Ptr& viewer);
-
-//#endif
+vector<int> NN(PointCloudT::Ptr target, PointCloudT::Ptr source, Eigen::Matrix4d initTransform, double dist);
