@@ -2,6 +2,7 @@
 #include <pcl/registration/ndt.h>
 #include <Eigen/Core>
 #include <Eigen/SVD>
+#include <pcl/console/time.h>   // TicToc
 
 #include "helper.h"
 
