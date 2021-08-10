@@ -148,13 +148,16 @@ int main(){
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered (new pcl::PointCloud<PointT>);
 	typename pcl::PointCloud<PointT>::Ptr scanCloud (new pcl::PointCloud<PointT>);
 
-	lidar->Listen([&new_scan, &lastScanTime, &scanCloud](auto data){
+	lidar->Listen([&new_scan, &lastScanTime, &pose, &scanCloud](auto data){
 
 		if(new_scan){
 			auto scan = boost::static_pointer_cast<csd::LidarMeasurement>(data);
+          	Eigen::Matrix4d transform = transform3D(pose.rotation.yaw, pose.rotation.pitch, pose.rotation.roll, pose.position.x, pose.position.y, pose.position.z);
 			for (auto detection : *scan){
 				if((detection.point.x*detection.point.x + detection.point.y*detection.point.y + detection.point.z*detection.point.z) > 8.0){ // Don't include points touching ego
-					pclCloud.points.push_back(PointT(detection.point.x, detection.point.y, detection.point.z));
+                  	Eigen::Vector4d local_point(detection.point.x, detection.point.y, detection.point.z, 1);
+                  	Eigen::Vector4d transform_point = transform * local_point;
+					pclCloud.points.push_back(PointT(transform_point[0], transform_point[1], transform_point[2]));
 				}
 			}
 			if(pclCloud.points.size() > 5000){ // CANDO: Can modify this value to get different scan resolutions
@@ -213,7 +216,7 @@ int main(){
 
 			// TODO: Find pose transform by using ICP or NDT matching
 			//pose = ....
-          	Eigen::Matrix4d transform = ICP(mapCloud, cloudFiltered, pose, 3);
+          	Eigen::Matrix4d transform = ICP(mapCloud, cloudFiltered, pose, 10);
             pose = getPose(transform);
 
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
