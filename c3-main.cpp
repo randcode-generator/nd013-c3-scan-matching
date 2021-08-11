@@ -145,7 +145,7 @@ int main(){
 
     pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
     // Setting minimum transformation difference for termination condition.
-    ndt.setTransformationEpsilon (0.0001);
+    ndt.setTransformationEpsilon (0.01);
     // Setting maximum step size for More-Thuente line search.
     ndt.setStepSize (1);
     //Setting Resolution of NDT grid structure (VoxelGridCovariance).
@@ -213,13 +213,14 @@ int main(){
 			// TODO: (Filter scan using voxel filter)
 			pcl::VoxelGrid<PointT> vg;
           	vg.setInputCloud(scanCloud);
-          	double filterRes = 0.5;
+          	double filterRes = 0.97;
           	vg.setLeafSize(filterRes, filterRes, filterRes);
           	typename pcl::PointCloud<PointT>::Ptr cloudFiltered (new pcl::PointCloud<PointT>);
           	vg.filter(*cloudFiltered);
+
 			// TODO: Find pose transform by using ICP or NDT matching
 			//pose = ....
-			Eigen::Matrix4d transform = NDT(ndt, cloudFiltered, pose, 2);
+			Eigen::Matrix4d transform = NDT(ndt, cloudFiltered, pose, 10);
             pose = getPose(transform);
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
 
