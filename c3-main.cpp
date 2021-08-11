@@ -145,7 +145,7 @@ int main(){
 
     pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
     // Setting minimum transformation difference for termination condition.
-    ndt.setTransformationEpsilon (0.01);
+    ndt.setTransformationEpsilon (0.0001);
     // Setting maximum step size for More-Thuente line search.
     ndt.setStepSize (1);
     //Setting Resolution of NDT grid structure (VoxelGridCovariance).
